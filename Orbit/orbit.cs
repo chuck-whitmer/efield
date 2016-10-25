@@ -5,17 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Efield;
 
 namespace Orbit
 {
+    class PointCharge
+    {
+        public int charge = 0;
+        public double x = 0.0;
+        public double y = 0.0;
+        public double z = 0.0;
+    }
+
     class orbit
     {
         static TextWriter tw;
         static string outFile;
         static bool writeToConsole = true;
         static string jsonFileName;
-        static Vector[] positiveCharges;
-        static Vector[] negativeCharges;
         static double voltage;
 
         static void Main(string[] args)
@@ -32,33 +39,14 @@ namespace Orbit
                 return;
             }
 
-            List<Vector> gcPosList = new List<Vector>();
-            List<Vector> gcNegList = new List<Vector>();
-            JArray jj = JArray.Parse(File.ReadAllText(jsonFileName));
-            foreach (JObject j in jj)
-            {
-                int charge = (int)j["charge"];
-                if (charge==1)
-                    gcPosList.Add(new Vector((double)j["x"], (double)j["y"], (double)j["z"]));
-                else
-                    gcNegList.Add(new Vector((double)j["x"], (double)j["y"], (double)j["z"]));
-            }
-            positiveCharges = gcPosList.ToArray();
-            negativeCharges = gcNegList.ToArray();
+            PointCharge[] points = Json.ReadArray<PointCharge>(jsonFileName);
+            WriteLine("Read {0} points", points.Length);
 
-            WriteLine("Have {0} positive and {1} negative charges.", positiveCharges.Length, negativeCharges.Length);
-
-            // Get the delta phi for the given points.
-            double phiPlus = 0.0;
-            for (int i = 0; i < positiveCharges.Length; i++)
-            {
-                phiPlus += Potential(positiveCharges[i], positiveCharges, i)
-                    - Potential(positiveCharges[i], negativeCharges);
-            }
+            EField efield = new EField(points, 0.01, 20000.0);
 
 
-
-            tw.Close();
+            if (tw != null)
+                tw.Close();
         }
 
         static public double Potential(Vector x, Vector[] pts, int omit=-1)
@@ -134,7 +122,7 @@ namespace Orbit
                 Console.WriteLine(s);
         }
     }
-
+    /*
     class Vector
     {
         public double x, y, z;
@@ -233,5 +221,5 @@ namespace Orbit
             return String.Format("({0,13:0.0000000000},{1,13:0.0000000000},{2,13:0.0000000000})", x, y, z);
         }
     }
-
+    */
 }
