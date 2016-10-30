@@ -42,7 +42,7 @@ namespace Orbit
             PointCharge[] points = Json.ReadArray<PointCharge>(jsonFileName);
             WriteLine("Read {0} points", points.Length);
 
-            EField efield = new EField(points, 0.01, 20000.0);
+            EField efield = new EField(points, 0.01, 0.0, 20000.0);
 
 
             if (tw != null)

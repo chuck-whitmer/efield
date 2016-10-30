@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Efield
 {
@@ -49,11 +45,16 @@ namespace Efield
             return Math.Sqrt(dx * dx + dy * dy + dz * dz);
         }
 
+        public double Length()
+        {
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+
         // Normalize
         //  Return a vector which is parallel to the given vector, but with length 1.
         public Vector Normalize()
         {
-            double len = Math.Sqrt(x * x + y * y + z * z);
+            double len = Length();
             return new Vector(x / len, y / len, z / len);
         }
 
@@ -76,6 +77,11 @@ namespace Efield
         public static Vector Difference(Vector v1, Vector v2)
         {
             return new Vector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+        }
+
+        public Vector VectorTo(Vector p)
+        {
+            return new Vector(p.x - x, p.y - y, p.z - z);
         }
 
         // GetPerpendiculars
